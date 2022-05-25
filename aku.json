@@ -1,19 +1,12 @@
 {
   "data": [
     [
-      "Tiger Nixon",
-      "System Architect",
-      "Edinburgh",
-      "5421",
-      "2011/04/25",
-      "$320,800"
-    ],[
-      "Tiger Nixon",
-      "System Architect",
-      "Edinburgh",
-      "5421",
-      "2011/04/25",
-      "$320,800"
+      {"grade_id":1},
+{"teacher":"Mia"},
+    ],
+[
+      {"grade_id":2},
+{"teacher":"Arif"},
     ],
   ]
 }

@@ -1,1 +1,1 @@
-"{'data':[{'grade_id': 1},{'teacher': 'Mia'},{'sub_criteria_id:1},]}"
+{'data':[{'grade_id': 1},{'teacher': 'Mia'},{'sub_criteria_id:1},]}

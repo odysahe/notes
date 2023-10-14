@@ -3,6 +3,7 @@ About :
 1. [Nginx](tutor/nginx.md)
     - [Laravel with nginx](tutor/nginx.md#configuration-laravel-with-nginx)
     - [Hide header nginx](tutor/nginx.md#hide-header-nginx)
+    - [Certbot](tutor/nginx.md#configure-certbot)
 2. [PHP](tutor/php.md)
     - [Change php version - 1 ](tutor/php.md#change-php-version-method-1)
     - [Change php version - 2 ](tutor/php.md#change-php-version-method-2)

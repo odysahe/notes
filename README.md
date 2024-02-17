@@ -10,6 +10,7 @@ About :
     - [Change php version - 3 ](tutor/php.md#change-php-version-method-3)
 3. [NODE](tutor/node.md)
     - [Nuxt 3 w Prisma ](tutor/node.md#installation-and-build)
+4. [Linux ( Ubuntu )](tutor/linux.md)
 
 ## About
 This repository note for me, if this repository useful for you, I am very happy

@@ -11,6 +11,8 @@ About :
 3. [NODE](tutor/node.md)
     - [Nuxt 3 w Prisma ](tutor/node.md#installation-and-build)
 4. [Linux ( Ubuntu )](tutor/linux.md)
+    - [Error GPG When run sudo apt update](tutor/linux.md#error-gpg-when-run-sudo-apt-update)
+    - [Error NO_PUBKEY Public Key Not Available](tutor/linux.md#error-no_pubkey-public-key-not-available)
 
 ## About
 This repository note for me, if this repository useful for you, I am very happy

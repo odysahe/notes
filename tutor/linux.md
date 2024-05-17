@@ -7,7 +7,7 @@ Reading package lists... Done
 W: https://dl.yarnpkg.com/debian/dists/stable/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
 ```
 The solution is:
-`sudo cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg` , i found the solution from this [link](https://youtu.be/8s0fTh1TD8k)
+`sudo cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/trusted.gpg` , i found the solution from this [link](https://youtu.be/8s0fTh1TD8k)
 ## Error `NO_PUBKEY` Public Key Not Available
 If error like :
 ```

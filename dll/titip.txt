@@ -1,0 +1,187 @@
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install git python3-certbot-nginx -y
+
+- buat user git
+
+adduser \
+   --system \
+   --shell /bin/bash \
+   --gecos 'Git Version Control' \
+   --group \
+   --disabled-password \
+   --home /home/git \
+   git
+   
+- catat uuid or guid  uid 113 gid 121
+
+- jangan lupa clear installation docker -> 
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+
+- install docker https://docs.docker.com/engine/install/ubuntu/#installation-methods
+
+su git (login ke user git)
+
+mkdir /home/git/gitea && /home/git/gitea/nano docker-compose.yml
+
+- copy paste text dibawah ini sampai dengan ports:
+
+version: "3"
+
+networks:
+  gitea:
+    external: false
+volumes:
+  gitea:
+    driver: local
+  data:
+services:
+  server:
+    image: gitea/gitea:1
+    container_name: gitea
+    environment:
+      - USER_UID=113
+      - USER_GID=121
+      - GITEA__database__DB_TYPE=mysql
+      - GITEA__database__HOST=db:3306
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=giteaZr
+    restart: always
+    networks:
+      - gitea
+    volumes:
+      - gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "8080:3000"
+      - "2221:22"
+    depends_on:
+      - db
+
+  db:
+    image: mariadb
+    restart: always
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    environment:
+      - MYSQL_ROOT_PASSWORD=giteaZr
+      - MYSQL_USER=gitea
+      - MYSQL_PASSWORD=giteaZr
+      - MYSQL_DATABASE=gitea
+    networks:
+      - gitea
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+docker-compose up -d
+
+- jika mengalami "Command 'docker-compose' not found" install docker-docker compose ->
+sudo apt install docker-compose
+
+- buka ip:8080 atau localhost:8080 di browser dan install gitea (Masukkan domain jika menggunakan domain)
+
+### NGINX ###
+
+- install nginx untuk reserve proxy
+sudo apt install nginx
+
+- demi keamanan matikan server_token di /etc/nginx/nginx.conf
+
+sudo nano /etc/nginx/sites-available/git.domain.com.conf (nama git.domain.com diberi nama domain anda dan gunakan .conf diakhir)
+
+- paste text berikut ke file git.domain.com.conf
+
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name git.domain.com;
+
+	root /var/www/html;
+	index index.html;
+	location / {
+#               try_files $uri $uri/ =404;
+                client_max_body_size 512M;
+                proxy_pass http://localhost:3000;
+                proxy_set_header Connection $http_connection;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+        }
+}
+
+- jika sudah buat symlink ke /etc/nginx/sites-enable/git.domain.com.conf
+
+sudo ln -s /etc/nginx/sites-available/git.domain.com.conf /etc/nginx/sites-enable/git.domain.com.conf
+
+- buat ssl otomatis
+
+sudo certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email user@domain.com -d git.domain.com
+
+- pada saat anda login sebagai admin di gitea web akan ada peringatan ketidak sesuaian ROOT_URL. Edit ROOT_URL yang semula http://git.domain.com/ menjadi https://git.domain.com/ dengan cara ikuti link https://docs.gitea.com/installation/install-with-docker#customization atau langsung di bawah ini:
+
+sudo nano /var/lib/docker/volumes/gitea_gitea/_data/gitea/conf/app.ini
+
+- jika sudah save dan restart container gitea
+
+sudo docker container restart gitea
+
+### ACT_RUNNER GITEA ####
+
+- GITEA_INSTANCE_URL diarahkan ke url gitea (git.domain.com) dan GITEA_RUNNER_REGISTRATION_TOKEN didapat dari https://git.domain.com/user/settings/actions/runners -> Create New Runner :
+
+sudo docker run -e GITEA_INSTANCE_URL=https://your_gitea.com -e GITEA_RUNNER_REGISTRATION_TOKEN=<your_token> -v /var/run/docker.sock:/var/run/docker.sock --name my_runner gitea/act_runner:nightly
+
+- (Opsional) Jika anda sudah menginstall act_runner di docker tidak perlu menjalankan perintah diatas lagi cukup jalankan:
+
+sudo docker exec my_runner act_runner register --instance https://git.domain.com --token <your_token> --no-interactive --name name_of_runner
+ 
+ - pergi ke halaman https://git.domain.com/admin/actions/runners , jika pada kolom status tidak idle maka jalankan perintah berikut:
+ sudo docker container start my_runner 
+ 
+ - lihat kembali pada halaman runner jika sudah berstatus idle maka runners sudah siap digunakan.
+ 
+ - selanjutnya clone repository anda dengan pergi kehalaman repository anda lalu copy url https, jika meminta username dan password masukkan username dan password saat anda akan login ke gitea.
+ - setelah berhasil clone repository anda buat folder .gitea/workflows dengan file berektensi .yaml contoh: myrepository/.gitea/workflows/runner.yaml dan isi file .yaml dengan text :
+ 
+ name: Gitea Actions Demo
+run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
+on: [push]
+
+jobs:
+  Explore-Gitea-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
+      - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ gitea.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ gitea.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+      
+- simpan dan push ke gitea dan lihat di halaman actions di repository anda, maka akan tampil runner yang sedang berjalan.
+
+sudo docker compose up -d di file .yaml
+ 
+  sudo docker run -d git.ody.blue/owdie/testnode:nightly --name testnodeody (menjalankan langsung tanpa pull)
+  
+  sudo docker run --publish 3011:3001 git.ody.blue/owdie/testnode:nightly
+  
+  sudo docker run -d --name testnodeody --publish 3011:3001 git.ody.blue/owdie/testnode:nightly	
+  
+  sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 testnodeody
+sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 testnodeody owrepo
+
+
+docker ps --format 'table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Size}}\t{{.Ports}}'

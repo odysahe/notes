@@ -13,6 +13,8 @@ About :
 4. [Linux ( Ubuntu )](tutor/linux.md)
     - [Error GPG When run sudo apt update](tutor/linux.md#error-gpg-when-run-sudo-apt-update)
     - [Error NO_PUBKEY Public Key Not Available](tutor/linux.md#error-no_pubkey-public-key-not-available)
+5. [GIT](tutor/git.md)
+    - [Update Local, Repo But Keep Your Another File](tutor/git.md#update-local-repo-but-keep-your-another-file)
 
 ## About
 This repository note for me, if this repository useful for you, I am very happy

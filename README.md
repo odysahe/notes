@@ -21,4 +21,4 @@ This repository note for me, if this repository useful for you, I am very happy
 
 **NOTE:**
 
-I'm still running on Ubuntu 22.04
+I'm running on Ubuntu 24.04

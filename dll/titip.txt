@@ -81,9 +81,10 @@ docker-compose up -d
 - jika mengalami "Command 'docker-compose' not found" install docker-docker compose ->
 sudo apt install docker-compose
 
-- buka ip:8080 atau localhost:8080 di browser dan install gitea (Masukkan domain jika menggunakan domain)
+- buka ip:8080 atau localhost:8080 di browser (Masukkan domain jika menggunakan domain) buat user admin  dan install gitea.
 
-### NGINX ###
+### NGINX REVERSE_PROXY ###
+- Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, lebih baik install di docker sebagai reverse proxy, namun padah contoh ini akan di install di server langsung.
 
 - install nginx untuk reserve proxy
 sudo apt install nginx
@@ -123,6 +124,8 @@ sudo ln -s /etc/nginx/sites-available/git.domain.com.conf /etc/nginx/sites-enabl
 
 sudo certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email user@domain.com -d git.domain.com
 
+### END NGINX ###
+
 - pada saat anda login sebagai admin di gitea web akan ada peringatan ketidak sesuaian ROOT_URL. Edit ROOT_URL yang semula http://git.domain.com/ menjadi https://git.domain.com/ dengan cara ikuti link https://docs.gitea.com/installation/install-with-docker#customization atau langsung di bawah ini:
 
 sudo nano /var/lib/docker/volumes/gitea_gitea/_data/gitea/conf/app.ini
@@ -131,9 +134,38 @@ sudo nano /var/lib/docker/volumes/gitea_gitea/_data/gitea/conf/app.ini
 
 sudo docker container restart gitea
 
+-Memodifikasi logo gitea versi 1.22.1
+
+-(lewati jika tidak menjalankan di docker) untuk gitea yang berjalan di docker lokasi filenya ada di : 
+
+-> /data/gitea/public/img/unialt-logo-large.png
+-> /data/gitea/templates/home.tmpl?
+
+Masuk ke terminal /var/lib/gitea/custom dan buat directory /public/assets/img/  <= paste file gambar disini contoh gambar.png
+
+Pergi ke https://github.com/go-gitea/gitea/tree/main/templates
+
+download file yang dibutuhkan contoh home.tmpl (sesuaikan penempatan file dengan yang ada di github repository)
+
+Masuk ke terminal pergi ke /var/lib/gitea/custom/templates/home.tmpl (jika folder templates tidak ada buat saja)
+
+lalu edit file home.tmpl cari tag <img> dan ganti nama file image dengan yang anda upload tadi contoh gambar.png
+
+file template untuk icon navbar adalah base/head_navbar.tmpl
+file template untuk tab icon adalah base/head.tmpl
+
+jika di navbar menunya acak acakan tambahkan class ```ui secondary menu``` di tag <div> dibawah tag <nav> menjadi :
+
+<nav id="navbar" aria-label="Navigation Bar">
+	<div class="navbar-left ui secondary menu">
+	
+Jangan lupa restart gitea
+
+### End GITEA ###
+
 ### ACT_RUNNER GITEA ####
 
-- GITEA_INSTANCE_URL diarahkan ke url gitea (git.domain.com) dan GITEA_RUNNER_REGISTRATION_TOKEN didapat dari https://git.domain.com/user/settings/actions/runners -> Create New Runner :
+- GITEA_INSTANCE_URL diarahkan ke url gitea (git.domain.com) dan GITEA_RUNNER_REGISTRATION_TOKEN didapat dari https://git.domain.com/user/settings/actions/runners -> Create New Runner (disarankan untuk tidak mengambil dari admin web karna semua pengguna git tanpa terkecuali akan bisa menggunakan act_runner):
 
 sudo docker run -e GITEA_INSTANCE_URL=https://your_gitea.com -e GITEA_RUNNER_REGISTRATION_TOKEN=<your_token> -v /var/run/docker.sock:/var/run/docker.sock --name my_runner gitea/act_runner:nightly
 
@@ -142,14 +174,15 @@ sudo docker run -e GITEA_INSTANCE_URL=https://your_gitea.com -e GITEA_RUNNER_REG
 sudo docker exec my_runner act_runner register --instance https://git.domain.com --token <your_token> --no-interactive --name name_of_runner
  
  - pergi ke halaman https://git.domain.com/admin/actions/runners , jika pada kolom status tidak idle maka jalankan perintah berikut:
- sudo docker container start my_runner 
+
+sudo docker container start my_runner 
  
  - lihat kembali pada halaman runner jika sudah berstatus idle maka runners sudah siap digunakan.
  
  - selanjutnya clone repository anda dengan pergi kehalaman repository anda lalu copy url https, jika meminta username dan password masukkan username dan password saat anda akan login ke gitea.
- - setelah berhasil clone repository anda buat folder .gitea/workflows dengan file berektensi .yaml contoh: myrepository/.gitea/workflows/runner.yaml dan isi file .yaml dengan text :
+ - setelah berhasil clone repository anda buat folder nama-repositori/.gitea/workflows dan buat file berektensi .yaml contoh: myrepository/.gitea/workflows/runner.yaml dan isi file .yaml dengan text :
  
- name: Gitea Actions Demo
+name: Gitea Actions Demo
 run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
 on: [push]
 
@@ -172,47 +205,25 @@ jobs:
       
 - simpan dan push ke gitea dan lihat di halaman actions di repository anda, maka akan tampil runner yang sedang berjalan.
 
+## END ACT_RUNNER ## 
+## pribadi ##
 sudo docker compose up -d di file .yaml
  
-  sudo docker run -d git.ody.blue/owdie/testnode:nightly --name testnodeody (menjalankan langsung tanpa pull)
+sudo docker run -d git.ody.blue/owdie/testnode:nightly --name testnodeody (menjalankan langsung tanpa pull)
   
-  sudo docker run --publish 3011:3001 git.ody.blue/owdie/testnode:nightly
+sudo docker run --publish 3011:3001 git.ody.blue/owdie/testnode:nightly
   
-  sudo docker run -d --name testnodeody --publish 3011:3001 git.ody.blue/owdie/testnode:nightly	
+sudo docker run -d --name testnodeody --publish 3011:3001 git.ody.blue/owdie/testnode:nightly	
   
-  sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 testnodeody
-sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 --cleanup true testnodeody owrepo
+sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 testnodeody
+
+sudo docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 --cleanup true 
+testnodeody owrepo
+
+docker ps --format 'table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Size}}\t{{.Ports}}' //untuk menampilkan docker container berdasarkan kolom yang dipilih
 
 
-docker ps --format 'table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Size}}\t{{.Ports}}'
+docker rmi -f $(docker images -q) //untuk menghapus images yang tidak digunakan di docker
 
-
-docker rmi -f $(docker images -q)
-
-
-
-
-
-
-
-
-
-Memodifikasi logo gitea versi 1.22.1
-
-Masuk ke terminal /var/lib/gitea/custom dan buat directory /public/assets/img/  <= paste file gambar disini contoh gambar.png
-
-Pergi ke https://github.com/go-gitea/gitea/tree/main/templates
-
-download file yang dibutuhkan contoh home.tmpl (sesuaikan penempatan file dengan yang ada di github repository)
-
-Masuk ke terminal pergi ke /var/lib/gitea/custom/templates/home.tmpl (jika folder templates tidak ada buat saja)
-
-lalu edit file home.tmpl cari tag <img> dan ganti nama file image dengan yang anda upload tadi contoh gambar.png
-
-file template untuk icon navbar adalah base/head_navbar.tmpl
-file template untuk tab icon adalah base/head.tmpl
-
-jika di navbar menunya acak acakan tambahkan class ```ui secondary menu``` di tag <div> dibawah tag <nav> menjadi :
-
-<nav id="navbar" aria-label="Navigation Bar">
-	<div class="navbar-left ui secondary menu">
+- Test caddy
+docker run -d --name caddy -p 80:80 -p 443:443 -p 443:443/udp -v caddy_data:/data -v caddy_config:/config caddy 

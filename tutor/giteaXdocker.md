@@ -1,5 +1,6 @@
 # My Exprience about Installation Gitea
-> [!TIP]
+> [!NOTE]
+> Gitea yang saya gunakan Versi 1.22.1<br>
 > Anda harus, bahkan WAJIB! mengerti cara mengoperasikan [Git](https://git-scm.com/).<br>
 > Akan sangat berguna jika anda sudah paham [Github Actions](https://docs.github.com/en/actions).<br>
 > Saya menjalankan semua perintah ini sebagai `root`, jadi jika anda masih login sebagai user biasa diharap login sebagai `root` terlebih dahulu.
@@ -7,6 +8,7 @@
    `apt update && apt upgrade -y`
 ## Install git python3-certbot (SSL)
    `apt install git python3-certbot-nginx -y`
+   <a href="ody.blue" target="_blank"> clik donk</a>
 ## Add `git` User
    ```
    adduser \
@@ -202,6 +204,11 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
      ```
   - Simpan dan push ke repository anda kemudian lihat di halaman actions di repository anda, maka akan tampil runner yang sedang berjalan.
   - Done, sekarang `Gitea Actions` siap digunakan.
+> [!NOTE]
+> Jika anda sudah menginstall `act_runner` di docker tidak perlu menjalankan perintah `docker run` lagi cukup jalankan:<br>
+>  ```
+>   docker exec my_runner act_runner register --instance https://git.domain.com --token <your_token> --no-interactive --name name_of_runner
+>  ```
 ### Test deploy VueJs App
    - Buat aplikasi [VueJs](https://vuejs.org/) dengan contoh nama folder `myvue`, Langka-langkah pembuatan aplikasi VueJs bisa ditemukan [disini](https://vuejs.org/guide/quick-start.html#creating-a-vue-application).
    - Buat folder `/myvue/.gitea/wokflows/` dan isi dengan file `runner.yaml`.

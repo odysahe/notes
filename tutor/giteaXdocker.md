@@ -8,7 +8,6 @@
    `apt update && apt upgrade -y`
 ## Install git python3-certbot (SSL)
    `apt install git python3-certbot-nginx -y`
-   <a href="ody.blue" target="_blank"> clik donk</a>
 ## Add `git` User
    ```
    adduser \

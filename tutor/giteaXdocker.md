@@ -1,20 +1,22 @@
 # My Exprience about Installation Gitea
 > [!TIP]
+> Anda harus, bahkan WAJIB! mengerti cara mengoperasikan [Git](https://git-scm.com/).<br>
+> Akan sangat berguna jika anda sudah paham [Github Actions](https://docs.github.com/en/actions).<br>
 > Saya menjalankan semua perintah ini sebagai `root`, jadi jika anda masih login sebagai user biasa diharap login sebagai `root` terlebih dahulu.
 ## Update and Upgrade Repository
-`apt update && apt upgrade -y`
+   `apt update && apt upgrade -y`
 ## Install git python3-certbot (SSL)
-`apt install git python3-certbot-nginx -y`
+   `apt install git python3-certbot-nginx -y`
 ## Add `git` User
-```
-adduser \
-   --system \
-   --shell /bin/bash \
-   --gecos 'Git Version Control' \
-   --group \
-   --disabled-password \
-   --home /home/git \
-   git
+   ```
+   adduser \
+      --system \
+      --shell /bin/bash \
+      --gecos 'Git Version Control' \
+      --group \
+      --disabled-password \
+      --home /home/git \
+      git
   ```
 > [!IMPORTANT]
 > Catat UID dan GUID yang dihasilkan dari membuat user `git` 
@@ -30,57 +32,58 @@ Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini
 - Buat direktori dan file `docker-compose.yml` : <br>
   `mkdir /home/git/gitea && /home/git/gitea/nano docker-compose.yml`
 - Copy dan Paste code dibawah ini pada file `docker-compose.yml`, Jangan lupa untuk mengganti `USER_UID` dan `USER_GUID`, ganti dengan UID dan GUID dari hasil kita membuat user `git` diatas <br>
-```
-version: "3"
 
-networks:
-  gitea:
-    external: false
-volumes:
-  gitea:
-    driver: local
-  data:
-services:
-  server:
-    image: gitea/gitea:1
-    container_name: gitea
-    environment:
-      - USER_UID=UID
-      - USER_GID=GUID/GID
-      - GITEA__database__DB_TYPE=mysql
-      - GITEA__database__HOST=db:3306
-      - GITEA__database__NAME=gitea
-      - GITEA__database__USER=gitea
-      - GITEA__database__PASSWD=giteaZr
-    restart: always
-    networks:
-      - gitea
-    volumes:
-      - gitea:/data
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    ports:
-      - "8080:3000"
-      - "2221:22"
-    depends_on:
-      - db
-
-  db:
-    image: mariadb
-    restart: always
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
-    environment:
-      - MYSQL_ROOT_PASSWORD=giteaZr
-      - MYSQL_USER=gitea
-      - MYSQL_PASSWORD=giteaZr
-      - MYSQL_DATABASE=gitea
-    networks:
-      - gitea
-    volumes:
-      - data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-```
+   ```
+   version: "3"
+   
+   networks:
+     gitea:
+       external: false
+   volumes:
+     gitea:
+       driver: local
+     data:
+   services:
+     server:
+       image: gitea/gitea:1
+       container_name: gitea
+       environment:
+         - USER_UID=UID
+         - USER_GID=GUID/GID
+         - GITEA__database__DB_TYPE=mysql
+         - GITEA__database__HOST=db:3306
+         - GITEA__database__NAME=gitea
+         - GITEA__database__USER=gitea
+         - GITEA__database__PASSWD=giteaZr
+       restart: always
+       networks:
+         - gitea
+       volumes:
+         - gitea:/data
+         - /etc/timezone:/etc/timezone:ro
+         - /etc/localtime:/etc/localtime:ro
+       ports:
+         - "8080:3000"
+         - "2221:22"
+       depends_on:
+         - db
+   
+     db:
+       image: mariadb
+       restart: always
+       command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+       environment:
+         - MYSQL_ROOT_PASSWORD=giteaZr
+         - MYSQL_USER=gitea
+         - MYSQL_PASSWORD=giteaZr
+         - MYSQL_DATABASE=gitea
+       networks:
+         - gitea
+       volumes:
+         - data:/var/lib/mysql
+       ports:
+         - "3306:3306"
+   ```
 > [!CAUTION]
 > Jika installasi anda dengan tujuan *_Productions_* diharap untuk merubah `environment` pada kode diatas.<br>
 - Lalu kita jalankan kode diatas untuk membuat Container pada docker dengan cara : <br>
@@ -92,25 +95,26 @@ services:
 Docker manager ini bertujuan agar tidak perlu menggunakan CLI lagi, tidak perlu khawatir didalam Docker Manager ini juga terdapat fitur CLI, docker manager yang saya gunakan adalah `dockge` yang dapat anda temukan [Disini](https://github.com/louislam/dockge) Dan untuk Installasinya ada [Disini](https://github.com/louislam/dockge?tab=readme-ov-file#basic) Atau bisa langsung mengikuti code ini :<br>
 > [!NOTE]
 > Saya sarankan tetap rujuk [repositori aslinya](https://github.com/louislam/dockge) untuk mendapat update terbaru
-```
-# Create directories that store your stacks and stores Dockge's stack
-mkdir -p /opt/stacks /opt/dockge
-cd /opt/dockge
 
-# Download the compose.yaml
-curl https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --output compose.yaml
-
-# Start the server
-docker compose up -d
-
-# If you are using docker-compose V1 or Podman
-# docker-compose up -d
-```
+   ```
+   # Create directories that store your stacks and stores Dockge's stack
+   mkdir -p /opt/stacks /opt/dockge
+   cd /opt/dockge
+   
+   # Download the compose.yaml
+   curl https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --output compose.yaml
+   
+   # Start the server
+   docker compose up -d
+   
+   # If you are using docker-compose V1 or Podman
+   # docker-compose up -d
+   ```
 Jika anda tidak mengubah port pada file `compose.yaml` maka dockge akan berjalan di `IP:5001` Atau `localhost:5001`. Buat username dan password(harus unik) untuk admin dan klik tombol Create.
 - Installasi dockge selesai.
 ## (Opsional) Install NGINX Sebagai `reverse_proxy`
 > [!NOTE]
-> Jika anda tidak memiliki domain bisa skip langkah ini.<br>
+> Jika anda tidak memiliki domain bisa lewati langkah ini.<br>
 
 Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi keamanan lebih baik install di docker sebagai `reverse_proxy`. Dalam hal ini saya akan menggunakan tool Nginx Proxy Manager yang dapat anda temukan [Disini](https://github.com/NginxProxyManager/nginx-proxy-manager)  <br>
 
@@ -118,19 +122,20 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
    - Login ke `dockge` yang baru anda install
    - Klik tombol `+ Compose` atau `+ Menyusun`
    - Copy dan Paste code dibawah ini pada kolom `compose.yaml` diatas kolom `.env` : <br>
-   ```
-   services:
-        app:
-          image: 'docker.io/jc21/nginx-proxy-manager:latest'
-          restart: unless-stopped
-          ports:
-            - '80:80'
-            - '81:81'
-            - '443:443'
-          volumes:
-            - ./data:/data
-            - ./letsencrypt:/etc/letsencrypt
-   ```
+   
+      ```
+      services:
+           app:
+             image: 'docker.io/jc21/nginx-proxy-manager:latest'
+             restart: unless-stopped
+             ports:
+               - '80:80'
+               - '81:81'
+               - '443:443'
+             volumes:
+               - ./data:/data
+               - ./letsencrypt:/etc/letsencrypt
+      ```
    - Klik Tombol `Deploy` atau `Terapkan`
    - Lalu buka di browser `IP:81` atau `localhost:81` Email dan Password Dockge biasanya `admin@example.com` dengan pass `changeme`, Sekali lagi baca dokumentasi resmi dari repository [Nginx Proxy Manager](ttps://github.com/NginxProxyManager/nginx-proxy-manager).
 ### Ujicoba Domain
@@ -139,4 +144,144 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
    - Di Tab `Details` isikan Domain Names dengan subdomain yang anda buat contoh `dockge.domain.com`. Pada kolom `Forward Hostname / IP` isikan `localhost`, Pada kolom `Forward Port` isikan port dari installasi `dockge` yaitu di port `5001`. Aktifkan `Cache Assets` dan `Block Common Exploits`.
    - Pindah ke Tab `SSL` pilih `Request a new SSL Certificate`, Aktifkan `Force SSL`, `HTTP/2 Support`, `HSTS Enabled`, `I Agree to the Let's Encrypt Terms of Service`. dan jangan lupa isikan email.
    - Klik simpan dan tunggu proses selesai, lalu buka domain `dockge.domain.com`.
+   - Buat juga subdomain untuk `gitea`, contoh `git.domain.com`, ikuti dari awal langkah [Uji Domain](https://github.com/odysahe/notes/edit/main/tutor/giteaXdocker.md#ujicoba-domain)
    - Done
+
+## Gitea `act_runner`
+> [!WARNING]
+> Jika anda menggunakan Domain sebelum memulai `act_runner` pastikan url dari `gitea` anda sudah benar, masuk ke halaman admin pada web gitea.
+> Pada saat anda login sebagai admin di gitea web akan ada peringatan ketidak sesuaian ROOT_URL, Edit ROOT_URL yang semula `http://git.domain.com/` menjadi `https://git.domain.com/` dengan cara ikuti langkah [ini](https://docs.gitea.com/installation/install-with-docker#customization), atau langsung dibawah ini: <br>
+> ```
+> nano /var/lib/docker/volumes/gitea_gitea/_data/gitea/conf/app.ini
+> # restart container gitea
+> docker container restart gitea
+> ```
+Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi agar bisa di deploy ke docker. `act_runner` dapat anda temukan [disini](https://gitea.com/gitea/act_runner), installasi yang saya gunakan dari [sini](https://gitea.com/gitea/act_runner#run-with-docker), sebagai contoh dari saya : <br>
+
+   - Buka terminal dan login sebagai `root`
+   - Jalankan perintah berikut :
+     
+      ```
+        docker run -e GITEA_INSTANCE_URL=https://git.domain.com -e GITEA_RUNNER_REGISTRATION_TOKEN=<your_token> -v /var/run/docker.sock:/var/run/docker.sock --name my_runner gitea/act_runner:nightly
+      ```
+> [!NOTE]
+> - `GITEA_INSTANCE_URL` -> Diisi url ke git anda
+> - `GITEA_RUNNER_REGISTRATION_TOKEN` -> Diisi dengan token yang didapat dari <br> `git.domain.com/user/settings/actions/runners` -> `Create New Runner` (Untuk alasan keamanan disarankan untuk tidak mengambil dari admin web karna semua pengguna git tanpa terkecuali akan bisa menggunakan `act_runner`)
+> - `--name my_runner` Nama Container docker
+
+   - Selanjutnya lihat ke halaman web gitea `git.domain.com/user/settings/actions/runners` jika pada kolom status tidak `idle` maka jalankan perintah berikut: <br>
+      ```
+      docker container start my_runner 
+      ```
+   - Lihat kembali pada halaman runner jika sudah berstatus idle maka runners sudah siap digunakan.
+   - Buat dan Clone Repository anda
+   - Jika meminta username dan password masukkan username dan password saat anda akan login ke gitea.
+   - Setelah berhasil clone repository anda, buat folder `nama-repositori/.gitea/workflows` dan buat file berektensi `.yaml` contoh: `myrepository/.gitea/workflows/runner.yaml` dan isi file `.yaml` dengan text :
+     
+     ```
+      name: Gitea Actions Demo
+      run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
+      on: [push]
+      
+      jobs:
+        Explore-Gitea-Actions:
+          runs-on: ubuntu-latest
+          steps:
+            - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
+            - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
+            - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
+            - name: Check out repository code
+              uses: actions/checkout@v4
+            - run: echo "💡 The ${{ gitea.repository }} repository has been cloned to the runner."
+            - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+            - name: List files in the repository
+              run: |
+                ls ${{ gitea.workspace }}
+            - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+     ```
+  - Simpan dan push ke repository anda kemudian lihat di halaman actions di repository anda, maka akan tampil runner yang sedang berjalan.
+  - Done, sekarang `Gitea Actions` siap digunakan.
+### Test deploy VueJs App
+   - Buat aplikasi [VueJs](https://vuejs.org/) dengan contoh nama folder `myvue`, Langka-langkah pembuatan aplikasi VueJs bisa ditemukan [disini](https://vuejs.org/guide/quick-start.html#creating-a-vue-application).
+   - Buat folder `/myvue/.gitea/wokflows/` dan isi dengan file `runner.yaml`.
+   - Copy dan Paste kode dibawah ini (Ganti `git.domain.com` dengan domain anda sendiri atau IP Lokal anda):
+
+     ```
+      name: Build And Push
+      run-name: ${{ gitea.actor }} is runs ci pipeline
+      on: [ push ]
+      
+      jobs:
+        build-push:
+          runs-on: ubuntu-latest
+          env:
+            RUNNER_TOOL_CACHE: /toolcache
+          steps:
+            - name: Checkout
+            - uses: https://github.com/actions/checkout@v4
+            - name: Use Node.js
+              uses: https://github.com/actions/setup-node@v4
+              with:
+                node-version: '20.15.0'
+            - run: npm install
+            - run: npm run build
+              env:
+                 NODE_OPTIONS: --max_old_space_size=4096
+            - name: Set up Docker Buildx
+              uses: https://github.com/docker/setup-buildx-action@v3
+              with:
+                config-inline: |
+                  [registry."git.domain.com"]
+                    http = true
+                    insecure = true            
+            - name: Login to DockerHub
+              uses: docker/login-action@v2
+              with:
+                registry: git.domain.com
+                username: ${{ secrets.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_PASSWORD }}
+                
+            - name: Get Meta
+              id: meta
+              run: |
+                echo REPO_NAME=$(echo ${GITHUB_REPOSITORY} | awk -F"/" '{print $2}') >> $GITHUB_OUTPUT                            
+            - name: Build and push Docker image
+              uses: https://github.com/docker/build-push-action@v5
+              with:
+                context: .
+                file: ./Dockerfile
+                push: true
+                tags: "git.domain.com/${{ secrets.DOCKER_USERNAME }}/${{steps.meta.outputs.REPO_NAME}}:latest"
+     ```
+   - Simpan file `runner.yaml` tadi.
+   - Kemudian buat file bernama `Dockerfile` tanpa ekstensi di folder `/myvue/`, Copy dan Paste kode dibawah ini:
+     ```
+     # build stage
+      FROM node:lts-alpine as build-stage
+      WORKDIR /app
+      COPY package*.json ./
+      RUN npm install
+      COPY . .
+      RUN npm run build
+      
+      # production stage
+      FROM nginx:stable-alpine as production-stage
+      COPY --from=build-stage /app/dist /usr/share/nginx/html
+      EXPOSE 80
+      CMD ["nginx", "-g", "daemon off;"]
+     ```
+   - Simpan file `Dockerfile` tadi.
+   - Sebelum menjalankan push ke repository anda silahkan pergi ke Setting repository anda<br> `git.domain.com/{nama-user}/{nama-repository}/settings/actions/secrets` dan setting variable secrets anda, klik `add secret` isi:
+     Name | Value |
+     --- | --- |
+     DOCKER_USERNAME| Username_Login_Gitea |
+     DOCKER_PASSWORD| Password_Login_Gitea |
+   - Jika sudah disetting silahkan push repository anda.
+   - Kemudian Silahkan cek halaman `git.domain.com/{nama-user}/{nama-repository}/actions` maka akan tampil halaman `act_runner` berjalan membuild `Docker Container`.
+   - Jika Gitea Actions telah berhasil silahkan lihat ke halaman `git.domain.com/{nama-user}/-/packages`.
+   - Klik package yang sudah di deploy tadi kemudian copy setelah text  `docker pull` menjadi contoh `git.domain.com/human/reponame:latest`.
+   - Login ke [dockge](https://github.com/odysahe/notes/edit/main/tutor/giteaXdocker.md#install-docker-manager) yang sudah di buat di awal, paste pada kolom `run docker` tambahkan text yang di copy tadi menjadi<br> `docker run -d --name mycontainer --publish 8088:80 git.domain.com/human/reponame:latest` lalu klik `change to stack` lalu klik `deploy`
+   - Jika proses deploy sudah berhasil silahkan cek ke browser dengan alamat `IP:8088` atau `localhost:8088`, Jika membuat nama domain yang mengarah ke aplikasi VueJs yang anda buat tadi ikuti langkah [Uji Coba Domain](https://github.com/odysahe/notes/edit/main/tutor/giteaXdocker.md#ujicoba-domain) diatas.
+   - Done.
+## Modifikasi Gitea Web Dan Logo

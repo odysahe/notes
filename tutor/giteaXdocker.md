@@ -144,7 +144,7 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
    - Di Tab `Details` isikan Domain Names dengan subdomain yang anda buat contoh `dockge.domain.com`. Pada kolom `Forward Hostname / IP` isikan `localhost`, Pada kolom `Forward Port` isikan port dari installasi `dockge` yaitu di port `5001`. Aktifkan `Cache Assets` dan `Block Common Exploits`.
    - Pindah ke Tab `SSL` pilih `Request a new SSL Certificate`, Aktifkan `Force SSL`, `HTTP/2 Support`, `HSTS Enabled`, `I Agree to the Let's Encrypt Terms of Service`. dan jangan lupa isikan email.
    - Klik simpan dan tunggu proses selesai, lalu buka domain `dockge.domain.com`.
-   - Buat juga subdomain untuk `gitea`, contoh `git.domain.com`, ikuti dari awal langkah [Uji Domain](https://github.com/odysahe/notes/edit/main/tutor/giteaXdocker.md#ujicoba-domain)
+   - Buat juga subdomain untuk `gitea`, contoh `git.domain.com`, ikuti dari awal langkah [Uji Domain](https://github.com/odysahe/notes/blob/main/tutor/giteaXdocker.md#ujicoba-domain)
    - Done
 
 ## Gitea `act_runner`
@@ -281,7 +281,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
    - Kemudian Silahkan cek halaman `git.domain.com/{nama-user}/{nama-repository}/actions` maka akan tampil halaman `act_runner` berjalan membuild `Docker Container`.
    - Jika Gitea Actions telah berhasil silahkan lihat ke halaman `git.domain.com/{nama-user}/-/packages`.
    - Klik package yang sudah di deploy tadi kemudian copy setelah text  `docker pull` menjadi contoh `git.domain.com/human/reponame:latest`.
-   - Login ke [dockge](https://github.com/odysahe/notes/edit/main/tutor/giteaXdocker.md#install-docker-manager) yang sudah di buat di awal, paste pada kolom `run docker` tambahkan text yang di copy tadi menjadi<br> `docker run -d --name mycontainer --publish 8088:80 git.domain.com/human/reponame:latest` lalu klik `change to stack` lalu klik `deploy`
-   - Jika proses deploy sudah berhasil silahkan cek ke browser dengan alamat `IP:8088` atau `localhost:8088`, Jika membuat nama domain yang mengarah ke aplikasi VueJs yang anda buat tadi ikuti langkah [Uji Coba Domain](https://github.com/odysahe/notes/edit/main/tutor/giteaXdocker.md#ujicoba-domain) diatas.
+   - Login ke [dockge](https://github.com/odysahe/notes/blob/main/tutor/giteaXdocker.md#install-docker-manager) yang sudah di buat di awal, paste pada kolom `run docker` tambahkan text yang di copy tadi menjadi<br> `docker run -d --name mycontainer --publish 8088:80 git.domain.com/human/reponame:latest` lalu klik `change to stack` lalu klik `deploy`
+   - Jika proses deploy sudah berhasil silahkan cek ke browser dengan alamat `IP:8088` atau `localhost:8088`, Jika membuat nama domain yang mengarah ke aplikasi VueJs yang anda buat tadi ikuti langkah [Uji Coba Domain](https://github.com/odysahe/notes/blob/main/tutor/giteaXdocker.md#ujicoba-domain) diatas.
    - Done.
 ## Modifikasi Gitea Web Dan Logo

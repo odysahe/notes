@@ -1,6 +1,6 @@
 # My Exprience about Installation Gitea
 > [!NOTE]
-> Gitea yang saya gunakan Versi 1.22.1<br>
+> Gitea yang saya gunakan `Gitea v1.22.1`, Server `VPS Hostinger` -> OS `Ubuntu 22.04`, Domain Management `Cloudflare`.<br>
 > Anda harus, bahkan WAJIB! mengerti cara mengoperasikan [Git](https://git-scm.com/).<br>
 > Akan sangat berguna jika anda sudah paham [Github Actions](https://docs.github.com/en/actions).<br>
 > Saya menjalankan semua perintah ini sebagai `root`, jadi jika anda masih login sebagai user biasa diharap login sebagai `root` terlebih dahulu.
@@ -9,7 +9,7 @@
 ## Install git python3-certbot (SSL)
    `apt install git python3-certbot-nginx -y`
 ## Add `git` User
-   ```
+   ```bash
    adduser \
       --system \
       --shell /bin/bash \
@@ -23,7 +23,7 @@
 > Catat UID dan GUID yang dihasilkan dari membuat user `git` 
 ## Install Docker
 Untuk memastikan docker di install dengan bersih, harap clear installation docker dengan menjalankan :
-```
+```bash
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 ```
 Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
@@ -31,10 +31,13 @@ Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini
 ## Install Gitea
 - Pertama kita login sebagai user `git` yang sudah kita buat di awal dengan cara `su git`.
 - Buat direktori dan file `docker-compose.yml` : <br>
-  `mkdir /home/git/gitea && /home/git/gitea/nano docker-compose.yml`
+
+  ```bash
+  mkdir /home/git/gitea && /home/git/gitea/nano docker-compose.yml
+  ```
 - Copy dan Paste code dibawah ini pada file `docker-compose.yml`, Jangan lupa untuk mengganti `USER_UID` dan `USER_GUID`, ganti dengan UID dan GUID dari hasil kita membuat user `git` diatas <br>
 
-   ```
+   ```yaml
    version: "3"
    
    networks:
@@ -88,7 +91,10 @@ Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini
 > [!CAUTION]
 > Jika installasi anda dengan tujuan *_Productions_* diharap untuk merubah `environment` pada kode diatas.<br>
 - Lalu kita jalankan kode diatas untuk membuat Container pada docker dengan cara : <br>
-  `cd /home/git/gitea/ && docker compose up -d`
+
+  ```bash
+  cd /home/git/gitea/ && docker compose up -d
+  ```
 - Buka `ip:8080` atau `localhost:8080` di browser (Masukkan domain jika menggunakan domain) buat user admin dan install gitea.
 - Installasi Gitea selesai.
 
@@ -97,7 +103,7 @@ Docker manager ini bertujuan agar tidak perlu menggunakan CLI lagi, tidak perlu 
 > [!NOTE]
 > Saya sarankan tetap rujuk [repositori aslinya](https://github.com/louislam/dockge) untuk mendapat update terbaru
 
-   ```
+   ```bash
    # Create directories that store your stacks and stores Dockge's stack
    mkdir -p /opt/stacks /opt/dockge
    cd /opt/dockge
@@ -124,7 +130,7 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
    - Klik tombol `+ Compose` atau `+ Menyusun`
    - Copy dan Paste code dibawah ini pada kolom `compose.yaml` diatas kolom `.env` : <br>
    
-      ```
+      ```yaml
       services:
            app:
              image: 'docker.io/jc21/nginx-proxy-manager:latest'
@@ -152,7 +158,7 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
 > [!WARNING]
 > Jika anda menggunakan Domain sebelum memulai `act_runner` pastikan url dari `gitea` anda sudah benar, masuk ke halaman admin pada web gitea.
 > Pada saat anda login sebagai admin di gitea web akan ada peringatan ketidak sesuaian ROOT_URL, Edit ROOT_URL yang semula `http://git.domain.com/` menjadi `https://git.domain.com/` dengan cara ikuti langkah [ini](https://docs.gitea.com/installation/install-with-docker#customization), atau langsung dibawah ini: <br>
-> ```
+> ```bash
 > nano /var/lib/docker/volumes/gitea_gitea/_data/gitea/conf/app.ini
 > # restart container gitea
 > docker container restart gitea
@@ -162,7 +168,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
    - Buka terminal dan login sebagai `root`
    - Jalankan perintah berikut :
      
-      ```
+      ```bash
         docker run -e GITEA_INSTANCE_URL=https://git.domain.com -e GITEA_RUNNER_REGISTRATION_TOKEN=<your_token> -v /var/run/docker.sock:/var/run/docker.sock --name my_runner gitea/act_runner:nightly
       ```
 > [!NOTE]
@@ -171,7 +177,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
 > - `--name my_runner` Nama Container docker
 
    - Selanjutnya lihat ke halaman web gitea `git.domain.com/user/settings/actions/runners` jika pada kolom status tidak `idle` maka jalankan perintah berikut: <br>
-      ```
+      ```bash
       docker container start my_runner 
       ```
    - Lihat kembali pada halaman runner jika sudah berstatus idle maka runners sudah siap digunakan.
@@ -179,7 +185,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
    - Jika meminta username dan password masukkan username dan password saat anda akan login ke gitea.
    - Setelah berhasil clone repository anda, buat folder `nama-repositori/.gitea/workflows` dan buat file berektensi `.yaml` contoh: `myrepository/.gitea/workflows/runner.yaml` dan isi file `.yaml` dengan text :
      
-     ```
+     ```yaml
       name: Gitea Actions Demo
       run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
       on: [push]
@@ -205,7 +211,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
   - Done, sekarang `Gitea Actions` siap digunakan.
 > [!NOTE]
 > Jika anda sudah menginstall `act_runner` di docker tidak perlu menjalankan perintah `docker run` lagi cukup jalankan:<br>
->  ```
+>  ```bash
 >   docker exec my_runner act_runner register --instance https://git.domain.com --token <your_token> --no-interactive --name name_of_runner
 >  ```
 ### Test deploy VueJs App
@@ -213,7 +219,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
    - Buat folder `/myvue/.gitea/wokflows/` dan isi dengan file `runner.yaml`.
    - Copy dan Paste kode dibawah ini (Ganti `git.domain.com` dengan domain anda sendiri atau IP Lokal anda):
 
-     ```
+     ```yaml
       name: Build And Push
       run-name: ${{ gitea.actor }} is runs ci pipeline
       on: [ push ]
@@ -262,7 +268,8 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
      ```
    - Simpan file `runner.yaml` tadi.
    - Kemudian buat file bernama `Dockerfile` tanpa ekstensi di folder `/myvue/`, Copy dan Paste kode dibawah ini:
-     ```
+
+     ```Dockerfile
      # build stage
       FROM node:lts-alpine as build-stage
       WORKDIR /app
@@ -278,7 +285,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
       CMD ["nginx", "-g", "daemon off;"]
      ```
    - Simpan file `Dockerfile` tadi.
-   - Sebelum menjalankan push ke repository anda silahkan pergi ke Setting repository anda<br> `git.domain.com/{nama-user}/{nama-repository}/settings/actions/secrets` dan setting variable secrets anda, klik `add secret` isi:
+   - Sebelum menjalankan push ke repository anda silahkan pergi ke Setting repository anda<br> `git.domain.com/{nama-user}/{nama-repository}/settings/actions/secrets` dan setting variable secrets untuk mengisi environment pada file `runner.yaml` anda, klik `add secret` isi:
      Name | Value |
      --- | --- |
      DOCKER_USERNAME| Username_Login_Gitea |
@@ -290,4 +297,77 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
    - Login ke [dockge](https://github.com/odysahe/notes/blob/main/tutor/giteaXdocker.md#install-docker-manager) yang sudah di buat di awal, paste pada kolom `run docker` tambahkan text yang di copy tadi menjadi<br> `docker run -d --name mycontainer --publish 8088:80 git.domain.com/human/reponame:latest` lalu klik `change to stack` lalu klik `deploy`
    - Jika proses deploy sudah berhasil silahkan cek ke browser dengan alamat `IP:8088` atau `localhost:8088`, Jika membuat nama domain yang mengarah ke aplikasi VueJs yang anda buat tadi ikuti langkah [Uji Coba Domain](https://github.com/odysahe/notes/blob/main/tutor/giteaXdocker.md#ujicoba-domain) diatas.
    - Done.
-## Modifikasi Gitea Web Dan Logo
+## Kustomisasi Gitea Web Dan Logo
+
+> [!NOTE]
+> Kustomisasi ini ditujukan untuk Gitea yang terinstall di docker sebagai container.<br>
+> Jika anda menginstall tanpa docker lokasi foldernya ada di `/var/lib/gitea/custom` silahkan baca dokumentasi lengkap gitea tentang [Customizing Gitea](https://docs.gitea.com/administration/customizing-gitea)
+
+- Langkah pertama login ssh ke server anda.
+- Install text editor `nano` di container gitea:
+
+  ```bash
+  # Masuk bash container gitea sebagai root
+  docker exec -it gitea bash
+
+  # Update repo
+  apk update
+
+  # Install Nano
+  apk add nano
+
+  # Keluar dari user root
+  exit
+  ```
+- Masuk ke `bash` Container gitea sebagai user `git` dengan cara:
+
+  ```bash
+  docker exec -u git -it gitea bash
+  ```
+- Jika konfigurasi `volume` pada saat installasi gitea tidak diubah maka seharusnya direktori yang digunakan adalah `data/gitea` silahkan arahkan terminal ke direktori `data/gitea`:
+  
+  ```bash
+  cd data/gitea
+  ```
+- Buat direktori baru untuk gambar dan template website gitea yang akan digunakan untuk kustomisasi halaman gitea web:
+
+  ```bash
+  mkdir public && mkdir public/assets && mkdir public/assets/img && mkdir templates && cd public/assets/img
+  ```
+- Pastikan anda sudah berada di dalam direktori `data/gitea/public/assets/img` dan download gambar untuk dijadikan logo, di sini saya memakai contoh logo [Github](https://github.com/fluidicon.png):
+
+  ```bash
+  wget https://github.com/fluidicon.png
+  ```
+- Jika sudah di download silahkan coba akses gambar tadi dari web gitea anda dengan cara buka url `https://git.domain.com/assets/img/fluidicon.png`, Maka akan terlihat logo yang sudah di download tadi.
+- Untuk mengubah logo pada landing page web gitea, anda harus mengunduh file template yang sudah disediakan oleh gitea melalui [link ini](https://github.com/go-gitea/gitea/tree/main/templates).
+- Klik pada file [home.tmpl](https://github.com/go-gitea/gitea/blob/main/templates/home.tmpl), lalu Klik tombol `raw` di pojok kanan atas pada halaman editor github dan setelah terbuka copy urlnya gunakan `wget` untuk mendownload file template tadi.
+- Sebelum mengunduh pastikan anda sudah berada dalam directori `data/gitea/templates` lalu jalankan perintah berikut:
+
+  ```bash
+  wget https://raw.githubusercontent.com/go-gitea/gitea/main/templates/home.tmpl
+  ```
+- Edit file `home.tmpl` yang sudah di download tadi:
+
+  ```bash
+  nano home.tmpl
+  ```
+- Cari tag `<img>` dan ganti nama file image dengan yang anda download tadi contoh `fluidicon.png` menjadi :
+
+  ```html
+  <img class="logo" width="220" height="220" src="{{AssetUrlPrefix}}/img/fluidicon.png" alt="{{ctx.Locale.Tr "logo"}}">
+  ```
+- Jika sudah simpan dan restart container gitea :
+
+  ```bash
+  docker container restart gitea
+  ```
+- Kemudian reload web gitea, Done gambar sudah berubah.
+>[!NOTE]
+> Untuk merubah halaman lain atau navbar dsb. sesuaikan dengan struktur folder yang ada di [github gitea templates](https://github.com/go-gitea/gitea/tree/main/templates).<br>
+> file template untuk icon navbar adalah `base/head_navbar.tmpl`<br>
+> file template untuk tab icon adalah `base/head.tmpl`
+
+Selain semua installasi diatas anda juga dapat menambahkan `autoupdate container` untuk membuat container selalu update jika ada perubahan pada file container yang ada di gitea, dan juga `autobackuper`.<br><br>
+***Sekian Terimakasih***
+# Selesai

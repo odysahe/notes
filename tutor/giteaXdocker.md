@@ -6,8 +6,8 @@
 > Saya menjalankan semua perintah ini sebagai `root`, jadi jika anda masih login sebagai user biasa diharap login sebagai `root` terlebih dahulu.
 ## Update and Upgrade Repository
    `apt update && apt upgrade -y`
-## Install git python3-certbot (SSL)
-   `apt install git python3-certbot-nginx -y`
+## Install git
+   `apt install git`
 ## Add `git` User
    ```bash
    adduser \

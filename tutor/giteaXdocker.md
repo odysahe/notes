@@ -33,7 +33,7 @@ Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini
 - Buat direktori dan file `docker-compose.yml` : <br>
 
   ```bash
-  mkdir /home/git/gitea && /home/git/gitea/nano docker-compose.yml
+  mkdir /home/git/gitea && nano /home/git/gitea/docker-compose.yml
   ```
 - Copy dan Paste code dibawah ini pada file `docker-compose.yml`, Jangan lupa untuk mengganti `USER_UID` dan `USER_GUID`, ganti dengan UID dan GUID dari hasil kita membuat user `git` diatas <br>
 
@@ -75,7 +75,7 @@ Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini
      db:
        image: mariadb
        restart: always
-       command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+       # command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
        environment:
          - MYSQL_ROOT_PASSWORD=giteaZr
          - MYSQL_USER=gitea
@@ -93,7 +93,7 @@ Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini
 - Lalu kita jalankan kode diatas untuk membuat Container pada docker dengan cara : <br>
 
   ```bash
-  cd /home/git/gitea/ && docker compose up -d
+  exit && cd /home/git/gitea/ && docker compose up -d
   ```
 - Buka `ip:8080` atau `localhost:8080` di browser (Masukkan domain jika menggunakan domain) buat user admin dan install gitea.
 - Installasi Gitea selesai.

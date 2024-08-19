@@ -139,10 +139,13 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
                - '80:80'
                - '81:81'
                - '443:443'
+             network_mode: host # tambahan agar bisa menggunakan "localhost" 
              volumes:
                - ./data:/data
                - ./letsencrypt:/etc/letsencrypt
       ```
+> [!NOTE]
+> Tambahkan `network_mode: host` agar saat membuat proxy bisa menggunakan `localhost` cek solusi yang saya temukan [disini](https://github.com/NginxProxyManager/nginx-proxy-manager/issues/555#issuecomment-2148712102)
    - Klik Tombol `Deploy` atau `Terapkan`
    - Lalu buka di browser `IP:81` atau `localhost:81` Email dan Password Dockge biasanya `admin@example.com` dengan pass `changeme`, Sekali lagi baca dokumentasi resmi dari repository [Nginx Proxy Manager](ttps://github.com/NginxProxyManager/nginx-proxy-manager).
 ### Ujicoba Domain

@@ -168,7 +168,7 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
    - Jalankan perintah berikut :
      
       ```bash
-        docker run -e GITEA_INSTANCE_URL=https://git.domain.com -e GITEA_RUNNER_REGISTRATION_TOKEN=<your_token> -v /var/run/docker.sock:/var/run/docker.sock --name my_runner gitea/act_runner:nightly
+      docker run -e GITEA_INSTANCE_URL=https://git.domain.com -e GITEA_RUNNER_REGISTRATION_TOKEN=<your_token> -v /var/run/docker.sock:/var/run/docker.sock --name my_runner --restart always gitea/act_runner:nightly
       ```
 > [!NOTE]
 > - `GITEA_INSTANCE_URL` -> Diisi url ke git anda
@@ -211,7 +211,11 @@ Gitea `act_runner` adalah pelari actions atau library untuk menguji aplikasi aga
 > [!NOTE]
 > Jika anda sudah menginstall `act_runner` di docker tidak perlu menjalankan perintah `docker run` lagi cukup jalankan:<br>
 >  ```bash
->   docker exec my_runner act_runner register --instance https://git.domain.com --token <your_token> --no-interactive --name name_of_runner
+>  # daftarkan repository atau user untuk menjalankan ac_runner
+>  docker exec my_runner act_runner register --instance https://git.domain.com --token <your_token> --no-interactive --name name_of_runner
+>
+>  # jika statusnya offline jalankan perintah
+>  docker exec my_runner act_runner daemon
 >  ```
 ### Test deploy VueJs App
    - Buat aplikasi [VueJs](https://vuejs.org/) dengan contoh nama folder `myvue`, Langka-langkah pembuatan aplikasi VueJs bisa ditemukan [disini](https://vuejs.org/guide/quick-start.html#creating-a-vue-application).

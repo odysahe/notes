@@ -4,10 +4,8 @@
 > Anda harus, bahkan WAJIB! mengerti cara mengoperasikan [Git](https://git-scm.com/).<br>
 > Akan sangat berguna jika anda sudah paham [Github Actions](https://docs.github.com/en/actions).<br>
 > Saya menjalankan semua perintah ini sebagai `root`, jadi jika anda masih login sebagai user biasa diharap login sebagai `root` terlebih dahulu.
-## Update and Upgrade Repository
-   `apt update && apt upgrade -y`
-## Install git
-   `apt install git`
+## Update, Upgrade Repository and Install Git
+   `apt update && apt upgrade -y && apt install git -y`
 ## Add `git` User
    ```bash
    adduser \
@@ -27,76 +25,6 @@ Untuk memastikan docker di install dengan bersih, harap clear installation docke
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 ```
 Dan Panduan installasi docker bisa diikuti dari dokumentasi resmi docker [Disini](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
-
-## Install Gitea
-- Pertama kita login sebagai user `git` yang sudah kita buat di awal dengan cara `su git`.
-- Buat direktori dan file `docker-compose.yml` : <br>
-
-  ```bash
-  mkdir /home/git/gitea && nano /home/git/gitea/docker-compose.yml
-  ```
-- Copy dan Paste code dibawah ini pada file `docker-compose.yml`, Jangan lupa untuk mengganti `USER_UID` dan `USER_GUID`, ganti dengan UID dan GUID dari hasil kita membuat user `git` diatas <br>
-
-   ```yaml
-   version: "3"
-   
-   networks:
-     gitea:
-       external: false
-   volumes:
-     gitea:
-       driver: local
-     data:
-   services:
-     server:
-       image: gitea/gitea:1
-       container_name: gitea
-       environment:
-         - USER_UID=UID
-         - USER_GID=GUID/GID
-         - GITEA__database__DB_TYPE=mysql
-         - GITEA__database__HOST=db:3306
-         - GITEA__database__NAME=gitea
-         - GITEA__database__USER=gitea
-         - GITEA__database__PASSWD=giteaZr
-       restart: always
-       networks:
-         - gitea
-       volumes:
-         - gitea:/data
-         - /etc/timezone:/etc/timezone:ro
-         - /etc/localtime:/etc/localtime:ro
-       ports:
-         - "8080:3000"
-         - "2221:22"
-       depends_on:
-         - db
-   
-     db:
-       image: mariadb
-       restart: always
-       # command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
-       environment:
-         - MYSQL_ROOT_PASSWORD=giteaZr
-         - MYSQL_USER=gitea
-         - MYSQL_PASSWORD=giteaZr
-         - MYSQL_DATABASE=gitea
-       networks:
-         - gitea
-       volumes:
-         - data:/var/lib/mysql
-       ports:
-         - "3306:3306"
-   ```
-> [!CAUTION]
-> Jika installasi anda dengan tujuan *_Productions_* diharap untuk merubah `environment` pada kode diatas.<br>
-- Lalu kita jalankan kode diatas untuk membuat Container pada docker dengan cara : <br>
-
-  ```bash
-  exit && cd /home/git/gitea/ && docker compose up -d
-  ```
-- Buka `ip:8080` atau `localhost:8080` di browser (Masukkan domain jika menggunakan domain) buat user admin dan install gitea.
-- Installasi Gitea selesai.
 
 ## Install Docker Manager
 Docker manager ini bertujuan agar tidak perlu menggunakan CLI lagi, tidak perlu khawatir didalam Docker Manager ini juga terdapat fitur CLI, docker manager yang saya gunakan adalah `dockge` yang dapat anda temukan [Disini](https://github.com/louislam/dockge) Dan untuk Installasinya ada [Disini](https://github.com/louislam/dockge?tab=readme-ov-file#basic) Atau bisa langsung mengikuti code ini :<br>
@@ -119,7 +47,7 @@ Docker manager ini bertujuan agar tidak perlu menggunakan CLI lagi, tidak perlu 
    ```
 Jika anda tidak mengubah port pada file `compose.yaml` maka dockge akan berjalan di `IP:5001` Atau `localhost:5001`. Buat username dan password(harus unik) untuk admin dan klik tombol Create.
 - Installasi dockge selesai.
-## (Opsional) Install NGINX Sebagai `reverse_proxy`
+## Install NGINX Sebagai `reverse_proxy`
 > [!NOTE]
 > Jika anda tidak memiliki domain bisa lewati langkah ini.<br>
 
@@ -156,6 +84,74 @@ Installasi nginx di server langsung sebenarnya tidak di rekomendasikan, demi kea
    - Klik simpan dan tunggu proses selesai, lalu buka domain `dockge.domain.com`.
    - Buat juga subdomain untuk `gitea`, contoh `git.domain.com`, ikuti dari awal langkah [Uji Domain](https://github.com/odysahe/notes/blob/main/tutor/giteaXdocker.md#ujicoba-domain)
    - Done
+
+## Install Gitea
+- Pertama kita login sebagai user `git` yang sudah kita buat di awal dengan cara `su git`.
+- Buat direktori dan file `docker-compose.yml` : <br>
+
+  ```bash
+  mkdir /home/git/gitea && nano /home/git/gitea/docker-compose.yml
+  ```
+- Copy dan Paste code dibawah ini pada file `docker-compose.yml`, Jangan lupa untuk mengganti `USER_UID` dan `USER_GUID`, ganti dengan UID dan GUID dari hasil kita membuat user `git` diatas <br>
+
+   ```yaml
+   networks:
+     gitea:
+       external: false
+   volumes:
+     gitea:
+       driver: local
+     data:
+   services:
+     server:
+       image: gitea/gitea:1
+       container_name: gitea
+       environment:
+         - USER_UID=UID
+         - USER_GID=GUID/GID
+         - GITEA__database__DB_TYPE=mysql
+         - GITEA__database__HOST=db:3306
+         - GITEA__database__NAME=gitea
+         - GITEA__database__USER=gitea
+         - GITEA__database__PASSWD=giteaZr
+       restart: always
+       networks:
+         - gitea
+       volumes:
+         - gitea:/data
+         - /etc/timezone:/etc/timezone:ro
+         - /etc/localtime:/etc/localtime:ro
+       ports:
+         - "8080:3000"
+         - "2221:22"
+       depends_on:
+         - db
+   
+     db:
+       image: mariadb
+       restart: always
+       command: mariadbd --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+       environment:
+         - MYSQL_ROOT_PASSWORD=giteaZr
+         - MYSQL_USER=gitea
+         - MYSQL_PASSWORD=giteaZr
+         - MYSQL_DATABASE=gitea
+       networks:
+         - gitea
+       volumes:
+         - data:/var/lib/mysql
+       ports:
+         - "3306:3306"
+   ```
+> [!CAUTION]
+> Jika installasi anda dengan tujuan *_Productions_* diharap untuk merubah `environment` pada kode diatas.<br>
+- Lalu kita jalankan kode diatas untuk membuat Container pada docker dengan cara : <br>
+
+  ```bash
+  exit && cd /home/git/gitea/ && docker compose up -d
+  ```
+- Buka `ip:8080` atau `localhost:8080` di browser (Masukkan domain jika menggunakan domain) buat user admin dan install gitea.
+- Installasi Gitea selesai.
 
 ## Gitea `act_runner`
 > [!WARNING]

@@ -15,6 +15,7 @@ About :
     - [Error NO_PUBKEY Public Key Not Available](tutor/linux.md#error-no_pubkey-public-key-not-available)
 5. [GIT](tutor/git.md)
     - [Update Local Repo, But Keep Your Another File](tutor/git.md#update-local-repo-but-keep-your-another-file)
+    - [Switch Branch](tutor/git.md#switch-branch)
 6. [Gitea](tutor/giteaXdocker.md)
     - [Full Installation Gitea + Docker + Action ( CI/CD, `act_runner ) ID Language ](tutor/giteaXdocker.md)
 8. ...

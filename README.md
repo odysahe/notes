@@ -18,7 +18,9 @@ About :
     - [Switch Branch](tutor/git.md#switch-branch)
 6. [Gitea](tutor/giteaXdocker.md)
     - [Full Installation Gitea + Docker + Action ( CI/CD, `act_runner ) ID Language ](tutor/giteaXdocker.md)
-8. ...
+8. [Mariadb](tutor/mariadb.md)
+    - [Mariadb installation with Configuration](tutor/mariadb.md)
+10. ....
 
 ## About
 This repository note for me, if this repository useful for you, I am very happy

@@ -20,6 +20,8 @@ About :
     - [Full Installation Gitea + Docker + Action ( CI/CD, `act_runner ) ID Language ](tutor/giteaXdocker.md)
 8. [Mariadb](tutor/mariadb.md)
     - [Mariadb installation with Configuration](tutor/mariadb.md)
+9. [Minio X Podman](tutor/minioxpodman.md)
+    - [Minio x Podman](tutor/minioxpodman.md)
 10. ....
 
 ## About
